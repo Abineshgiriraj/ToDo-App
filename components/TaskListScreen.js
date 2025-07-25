@@ -120,24 +120,19 @@ function TaskListScreen() {
     saveTasks(updatedTasks);
   };
 
-  // Delete a task
+  // Delete a task - simplified function without alert
   const deleteTask = (id) => {
-    Alert.alert(
-      'Delete Task',
-      'Are you sure you want to delete this task?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
-          style: 'destructive',
-          onPress: () => {
-            const updatedTasks = tasks.filter(task => task.id !== id);
-            setTasks(updatedTasks);
-            saveTasks(updatedTasks);
-          }
-        }
-      ]
-    );
+    try {
+      // Create a new array without the task to delete
+      const updatedTasks = tasks.filter(task => task.id !== id);
+      // Update state first
+      setTasks(updatedTasks);
+      // Then save to AsyncStorage
+      saveTasks(updatedTasks);
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      Alert.alert('Error', 'Could not delete the task. Please try again.');
+    }
   };
 
   // Open modal to add a new task
@@ -226,10 +221,11 @@ function TaskListScreen() {
         </TouchableOpacity>
         
         <TouchableOpacity 
-          style={styles.actionButton}
+          style={[styles.actionButton, { backgroundColor: '#ffeeee', borderRadius: 20 }]}
           onPress={() => deleteTask(item.id)}
+          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
         >
-          <Ionicons name="trash-outline" size={18} color="#e74c3c" />
+          <Ionicons name="trash" size={22} color="#e74c3c" />
         </TouchableOpacity>
       </View>
     </View>
@@ -462,8 +458,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   actionButton: {
-    padding: 8,
-    marginLeft: 8,
+    padding: 10,
+    marginLeft: 10,
+    borderRadius: 20,
   },
   fab: {
     position: 'absolute',
